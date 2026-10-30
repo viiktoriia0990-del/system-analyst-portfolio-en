@@ -1,0 +1,5 @@
+summary: Application not found
+value:
+  code: APPLICATION_NOT_FOUND
+  message: Application app-999 not found.
+  traceId: trace-5b060

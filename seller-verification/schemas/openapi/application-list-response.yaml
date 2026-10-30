@@ -1,0 +1,14 @@
+type: object # Application list response
+description: A page of the application list
+additionalProperties: false
+required:
+- items
+- pagination
+properties:
+  items:
+    type: array
+    description: Applications on the current page
+    items:
+      $ref: ./application-summary.yaml
+  pagination:
+    $ref: ./pagination.yaml

@@ -1,0 +1,9 @@
+type: string
+description: Seller's legal form
+enum:
+- IP
+- LLC
+x-enumDescriptions:
+  IP: Sole proprietor
+  LLC: Limited liability company
+example: IP

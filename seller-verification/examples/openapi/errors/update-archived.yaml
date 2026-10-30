@@ -1,0 +1,5 @@
+summary: Archived
+value:
+  code: APPLICATION_ARCHIVED
+  message: Application app-504 is archived. Restore it first to update it.
+  traceId: trace-5b078

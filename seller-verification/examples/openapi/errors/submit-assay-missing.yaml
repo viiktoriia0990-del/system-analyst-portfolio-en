@@ -1,0 +1,5 @@
+summary: No proof of Assay Chamber registration
+value:
+  code: REQUIRED_DOCUMENTS_MISSING
+  message: 'Application app-507 cannot be submitted: attach proof of Assay Chamber registration (ASSAY_REGISTRATION).'
+  traceId: trace-5b030

@@ -1,0 +1,21 @@
+name: SellerApplicationStatusChanged # Technical message name
+title: Application status changed # Human-readable title
+summary: Verification application status change event
+contentType: application/json # The message value is JSON in UTF-8
+correlationId:
+  description: Links the event to the original HTTP request
+  location: $message.header#/correlation-id
+bindings:
+  kafka:
+    key: # Kafka message key
+      type: string
+      description: applicationId, so all events of one application go to one partition and are read in order
+    bindingVersion: 0.4.0
+headers:
+  $ref: '../../schemas/asyncapi/message-headers.yaml'
+payload:
+  $ref: '../../schemas/asyncapi/application-status-changed-payload.yaml'
+examples:
+- $ref: '../../examples/asyncapi/application-submitted.yaml'
+- $ref: '../../examples/asyncapi/application-needs-rework.yaml'
+- $ref: '../../examples/asyncapi/application-approved.yaml'

@@ -1,0 +1,5 @@
+summary: Already approved
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-495 is already approved (status APPROVED). Submission is not available.
+  traceId: trace-5b033

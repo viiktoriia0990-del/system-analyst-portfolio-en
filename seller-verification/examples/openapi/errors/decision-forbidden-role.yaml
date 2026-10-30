@@ -1,0 +1,5 @@
+summary: A seller tries to make a decision
+value:
+  code: FORBIDDEN
+  message: 'Only a legal officer can make a decision on an application. Your role: SELLER.'
+  traceId: trace-5b042

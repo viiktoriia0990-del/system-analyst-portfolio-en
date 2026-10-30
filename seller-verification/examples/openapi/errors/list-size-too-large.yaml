@@ -1,0 +1,5 @@
+summary: Page size over 100
+value:
+  code: INVALID_PAGINATION
+  message: Parameter size must be between 1 and 100, got 500.
+  traceId: trace-5b001

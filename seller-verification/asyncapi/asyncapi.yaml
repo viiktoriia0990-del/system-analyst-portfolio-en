@@ -1,0 +1,39 @@
+asyncapi: 2.6.0 # AsyncAPI specification version
+info:
+  title: Seller Application Events
+  description: >-
+    Producer: Seller Verification Service, the service that implements the applications API
+    and publishes an event to Kafka after each status change.
+    Subscriber: Notification Service reads the event and emails the seller about the new status.
+  version: 1.0.0
+servers: # Message broker
+  local:
+    url: localhost:9092 # Local Kafka broker address
+    protocol: kafka
+    description: Local Kafka broker
+defaultContentType: application/json
+channels:
+  seller-application.status-changed.v1: # Channel = Kafka topic
+    description: Topic with verification application status changes
+    bindings:
+      kafka:
+        topic: seller-application.status-changed.v1
+        partitions: 3
+        replicas: 1
+        bindingVersion: 0.4.0
+    subscribe: # In AsyncAPI 2.x, subscribe means the service publishes and others subscribe
+      operationId: sellerApplicationStatusChanged
+      summary: Application status changed
+      bindings:
+        kafka:
+          groupId: # Subscriber consumer group
+            type: string
+            enum:
+            - notification-service
+          clientId: # Producer ID
+            type: string
+            enum:
+            - seller-verification-service
+          bindingVersion: 0.4.0
+      message:
+        $ref: './messages/application-status-changed.yaml'

@@ -1,0 +1,18 @@
+type: object # Kafka message headers
+description: Headers the producer adds to every message
+required:
+- content-type
+- event-type
+- correlation-id
+properties:
+  content-type:
+    type: string
+    description: Message value format
+    const: application/json
+  event-type:
+    type: string
+    description: Event type. Lets the subscriber know what arrived without parsing the payload
+    const: SellerApplicationStatusChanged
+  correlation-id:
+    type: string
+    description: ID of the original HTTP request. Matches correlationId in the payload and traceId in the logs

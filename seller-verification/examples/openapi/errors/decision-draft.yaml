@@ -1,0 +1,5 @@
+summary: The application is still a draft
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-507 has not been submitted yet (status DRAFT). A decision can be made only on an application in SUBMITTED status.
+  traceId: trace-5b043

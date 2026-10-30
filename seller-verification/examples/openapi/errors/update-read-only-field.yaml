@@ -1,0 +1,5 @@
+summary: Read-only field
+value:
+  code: INVALID_REQUEST
+  message: Field status cannot be changed via PATCH. The status is changed by the submit and decision operations.
+  traceId: trace-5b071

@@ -1,0 +1,8 @@
+summary: Change the legal form
+value:
+  legalForm: LLC
+  legalName: Kotova Jeweler LLC
+  inn: '7723456789'
+  documents:
+  - type: REGISTRATION_RECORD
+    fileId: file-3210

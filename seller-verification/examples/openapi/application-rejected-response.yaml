@@ -1,0 +1,17 @@
+summary: Reject
+value:
+  id: app-501
+  sellerId: seller-024
+  status: REJECTED
+  legalForm: IP
+  legalName: IE Anna Viktorovna Smirnova
+  inn: '771234567890'
+  contactEmail: anna.smirnova@example.com
+  documents:
+  - type: REGISTRATION_RECORD
+    fileId: file-3101
+  - type: ASSAY_REGISTRATION
+    fileId: file-3102
+  reviewComment: The seller is not registered with the Assay Chamber.
+  createdAt: '2026-10-22T09:10:00Z'
+  updatedAt: '2026-10-23T11:40:00Z'

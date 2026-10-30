@@ -1,0 +1,5 @@
+summary: Legal form without INN
+value:
+  code: INVALID_REQUEST
+  message: 'When changing legalForm, pass a new inn: 12 digits for a sole proprietor, 10 for an LLC.'
+  traceId: trace-5b072

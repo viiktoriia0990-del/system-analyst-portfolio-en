@@ -1,0 +1,17 @@
+type: string
+description: >-
+  Application status. Transitions: DRAFT → SUBMITTED, NEEDS_REWORK → SUBMITTED,
+  SUBMITTED → APPROVED | REJECTED | NEEDS_REWORK
+enum:
+- DRAFT
+- SUBMITTED
+- NEEDS_REWORK
+- APPROVED
+- REJECTED
+x-enumDescriptions:
+  DRAFT: Draft, the seller has not submitted the application yet
+  SUBMITTED: Submitted, awaiting the legal team's decision
+  NEEDS_REWORK: Returned to the seller for rework
+  APPROVED: Approved, the seller can start selling
+  REJECTED: Rejected, cannot be resubmitted
+example: SUBMITTED

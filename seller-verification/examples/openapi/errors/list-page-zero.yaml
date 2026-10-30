@@ -1,0 +1,5 @@
+summary: Page number less than 1
+value:
+  code: INVALID_PAGINATION
+  message: Parameter page must be at least 1, got 0.
+  traceId: trace-5b002

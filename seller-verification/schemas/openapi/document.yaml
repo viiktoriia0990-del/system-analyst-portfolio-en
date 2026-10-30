@@ -1,0 +1,23 @@
+type: object
+description: A document attached to the application. The file is uploaded beforehand by a separate service, only its ID is passed here
+additionalProperties: false
+required:
+- type
+- fileId
+properties:
+  type:
+    type: string
+    description: >-
+      Document type. REGISTRATION_RECORD and ASSAY_REGISTRATION are required for submission
+    enum:
+    - REGISTRATION_RECORD
+    - ASSAY_REGISTRATION
+    - OTHER
+    x-enumDescriptions:
+      REGISTRATION_RECORD: EGRIP or EGRUL record sheet (state register extract), required
+      ASSAY_REGISTRATION: Proof of registration with the Assay Chamber, required
+      OTHER: Any other document, optional
+    example: ASSAY_REGISTRATION
+  fileId:
+    type: string
+    example: file-3102

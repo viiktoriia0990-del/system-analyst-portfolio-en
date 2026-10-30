@@ -1,0 +1,18 @@
+summary: Archive a rejected application
+value:
+  id: app-492
+  sellerId: seller-027
+  status: REJECTED
+  legalForm: LLC
+  legalName: Aurum LLC
+  inn: '7709876543'
+  contactEmail: info@aurum.example.com
+  documents:
+  - type: REGISTRATION_RECORD
+    fileId: file-2901
+  - type: ASSAY_REGISTRATION
+    fileId: file-2902
+  reviewComment: The company is not registered with the Assay Chamber.
+  archivedAt: '2026-10-23T09:30:00Z'
+  createdAt: '2026-10-19T11:30:00Z'
+  updatedAt: '2026-10-23T09:30:00Z'

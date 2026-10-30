@@ -1,0 +1,5 @@
+summary: Invalid email
+value:
+  code: INVALID_REQUEST
+  message: 'Field contactEmail: anna.smirnova@ is not a valid email.'
+  traceId: trace-5b011

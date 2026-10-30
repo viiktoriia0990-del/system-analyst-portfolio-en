@@ -1,0 +1,5 @@
+summary: Empty body
+value:
+  code: INVALID_REQUEST
+  message: 'Pass at least one field to update: legalForm, legalName, inn, contactEmail or documents.'
+  traceId: trace-5b070

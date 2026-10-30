@@ -1,0 +1,33 @@
+type: object # PATCH body in JSON Merge Patch format (RFC 7396)
+description: >-
+  Application update. Only the fields to change are passed, the rest stay as they were.
+  The legal form and INN change only together: 12-digit INN for a sole proprietor, 10-digit for an LLC.
+  The document list is passed in full and replaces the previous one
+additionalProperties: false
+minProperties: 1
+dependentRequired: # Changing the legal form without INN, or INN without the form, is not allowed
+  legalForm:
+  - inn
+  inn:
+  - legalForm
+properties:
+  legalForm:
+    $ref: ./legal-form.yaml
+  legalName:
+    type: string
+    minLength: 3
+    maxLength: 255
+    example: Kotova Jeweler LLC
+  inn:
+    type: string
+    pattern: '^(\d{10}|\d{12})$'
+    example: '7723456789'
+  contactEmail:
+    type: string
+    format: email
+    example: elena.kotova@example.com
+  documents:
+    type: array
+    description: The full new list of documents. Documents not in the list are detached from the application
+    items:
+      $ref: ./document.yaml

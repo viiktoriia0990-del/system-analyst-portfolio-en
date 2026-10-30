@@ -1,0 +1,9 @@
+type: object
+description: Data sent when submitting an application for review. The body is optional
+additionalProperties: false
+properties:
+  sellerComment:
+    type: string
+    description: Seller's comment for the legal team, for example what was fixed after rework
+    maxLength: 1000
+    example: Uploaded a fresh EGRIP extract dated 24.10.2026.

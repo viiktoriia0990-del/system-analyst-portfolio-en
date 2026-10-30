@@ -1,0 +1,5 @@
+summary: INN does not match the legal form
+value:
+  code: INVALID_REQUEST
+  message: 'Field inn: for LLC, INN must have 10 digits, got 12 (772345678901).'
+  traceId: trace-5b073

@@ -1,0 +1,26 @@
+type: object # Result page details
+description: Current page parameters and total number of records
+additionalProperties: false
+required:
+- page
+- size
+- totalItems
+- totalPages
+properties:
+  page:
+    type: integer
+    minimum: 1
+    example: 1
+  size:
+    type: integer
+    minimum: 1
+    maximum: 100
+    example: 20
+  totalItems:
+    type: integer
+    minimum: 0
+    example: 37
+  totalPages:
+    type: integer
+    minimum: 0
+    example: 2

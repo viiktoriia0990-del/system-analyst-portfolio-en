@@ -1,0 +1,5 @@
+summary: Already approved
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-495 is approved (status APPROVED). An approved application cannot be archived.
+  traceId: trace-5b081

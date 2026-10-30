@@ -1,0 +1,5 @@
+summary: An unfinished draft exists
+value:
+  code: APPLICATION_ALREADY_EXISTS
+  message: You already have a draft application app-507. Continue filling it in.
+  traceId: trace-5b015

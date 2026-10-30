@@ -1,0 +1,5 @@
+summary: Unknown sort
+value:
+  code: INVALID_REQUEST
+  message: 'Sorting by name is not supported. Available: createdAt, -createdAt, updatedAt, -updatedAt.'
+  traceId: trace-5b003

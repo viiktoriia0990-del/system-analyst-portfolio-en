@@ -1,0 +1,5 @@
+summary: Token missing
+value:
+  code: UNAUTHORIZED
+  message: 'Authorization required: pass the header Authorization: Bearer <token>.'
+  traceId: trace-5b050

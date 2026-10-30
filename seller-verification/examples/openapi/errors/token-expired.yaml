@@ -1,0 +1,5 @@
+summary: Token expired
+value:
+  code: UNAUTHORIZED
+  message: The token has expired. Please log in again.
+  traceId: trace-5b051

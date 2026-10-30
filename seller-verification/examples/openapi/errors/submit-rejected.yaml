@@ -1,0 +1,5 @@
+summary: Rejected
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-499 is rejected (status REJECTED). Resubmission is not available. Archive it and create a new application.
+  traceId: trace-5b034

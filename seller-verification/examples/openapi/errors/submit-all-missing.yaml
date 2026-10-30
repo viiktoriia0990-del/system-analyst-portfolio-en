@@ -1,0 +1,5 @@
+summary: Required documents missing
+value:
+  code: REQUIRED_DOCUMENTS_MISSING
+  message: 'Application app-507 cannot be submitted: attach the EGRIP or EGRUL record sheet (REGISTRATION_RECORD) and proof of Assay Chamber registration (ASSAY_REGISTRATION).'
+  traceId: trace-5b031

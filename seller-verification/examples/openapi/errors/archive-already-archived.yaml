@@ -1,0 +1,5 @@
+summary: Already archived
+value:
+  code: APPLICATION_ARCHIVED
+  message: Application app-504 is already archived.
+  traceId: trace-5b082

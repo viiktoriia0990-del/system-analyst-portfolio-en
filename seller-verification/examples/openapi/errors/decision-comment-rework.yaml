@@ -1,0 +1,5 @@
+summary: Rework without a comment
+value:
+  code: COMMENT_REQUIRED
+  message: For a NEEDS_REWORK decision, specify what needs fixing in the comment field.
+  traceId: trace-5b041

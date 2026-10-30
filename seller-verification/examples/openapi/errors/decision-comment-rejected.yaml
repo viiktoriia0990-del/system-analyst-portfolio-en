@@ -1,0 +1,5 @@
+summary: Rejection without a comment
+value:
+  code: COMMENT_REQUIRED
+  message: For a REJECTED decision, specify the rejection reason in the comment field.
+  traceId: trace-5b040

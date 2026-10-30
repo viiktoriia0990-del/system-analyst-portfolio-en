@@ -1,0 +1,29 @@
+type: object
+description: Data to create an application
+additionalProperties: false
+required:
+- legalForm
+- legalName
+- inn
+- contactEmail
+properties:
+  legalForm:
+    $ref: ./legal-form.yaml
+  legalName:
+    type: string
+    minLength: 3
+    maxLength: 255
+    example: IE Anna Viktorovna Smirnova
+  inn:
+    type: string
+    pattern: '^(\d{10}|\d{12})$'
+    example: '771234567890'
+  contactEmail:
+    type: string
+    format: email
+    example: anna.smirnova@example.com
+  documents:
+    type: array
+    description: Documents can be attached now or later, before submitting for review
+    items:
+      $ref: ./document.yaml

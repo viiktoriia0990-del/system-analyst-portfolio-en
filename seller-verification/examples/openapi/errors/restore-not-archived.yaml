@@ -1,0 +1,5 @@
+summary: Not archived
+value:
+  code: APPLICATION_NOT_ARCHIVED
+  message: Application app-507 is not archived, nothing to restore.
+  traceId: trace-5b083

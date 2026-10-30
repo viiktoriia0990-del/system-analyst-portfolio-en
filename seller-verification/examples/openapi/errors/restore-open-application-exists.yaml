@@ -1,0 +1,5 @@
+summary: An open application exists
+value:
+  code: APPLICATION_ALREADY_EXISTS
+  message: 'Draft app-503 cannot be restored: you already have open application app-507. Archive it or continue working on it.'
+  traceId: trace-5b084

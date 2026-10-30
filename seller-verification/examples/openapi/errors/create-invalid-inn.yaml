@@ -1,0 +1,5 @@
+summary: Invalid INN
+value:
+  code: INVALID_REQUEST
+  message: 'Field inn: INN must have 10 digits for an LLC or 12 digits for a sole proprietor, got 77123.'
+  traceId: trace-5b010

@@ -1,0 +1,5 @@
+summary: Someone else's application
+value:
+  code: FORBIDDEN
+  message: Application app-501 belongs to another seller.
+  traceId: trace-5b020

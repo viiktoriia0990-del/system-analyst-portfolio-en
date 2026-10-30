@@ -1,0 +1,5 @@
+summary: Name is missing
+value:
+  code: INVALID_REQUEST
+  message: Field legalName is required.
+  traceId: trace-5b012

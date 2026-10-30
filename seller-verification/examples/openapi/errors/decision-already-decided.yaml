@@ -1,0 +1,5 @@
+summary: Decision already made
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: A decision on application app-495 has already been made (status APPROVED).
+  traceId: trace-5b044

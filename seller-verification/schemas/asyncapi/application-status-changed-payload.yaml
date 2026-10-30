@@ -1,0 +1,51 @@
+type: object # Root type of the event payload
+description: Application status change event data
+required:
+- eventId
+- eventVersion
+- occurredAt
+- correlationId
+- applicationId
+- sellerId
+- actorId
+- previousStatus
+- newStatus
+properties:
+  eventId:
+    type: string
+    description: Event ID. The consumer uses it to avoid processing an event twice
+    examples:
+    - evt-20031
+  eventVersion:
+    type: integer
+    examples:
+    - 1
+  occurredAt:
+    type: string
+    format: date-time
+    examples:
+    - '2026-10-23T11:40:00Z'
+  correlationId:
+    type: string
+    examples:
+    - trace-7f20b
+  applicationId:
+    type: string
+    examples:
+    - app-501
+  sellerId:
+    type: string
+    examples:
+    - seller-024
+  actorId:
+    type: string
+    examples:
+    - legal-007
+  previousStatus:
+    $ref: ../openapi/application-status.yaml
+  newStatus:
+    $ref: ../openapi/application-status.yaml
+  comment:
+    type: string
+    examples:
+    - The EGRIP record sheet is older than 30 days. Upload a fresh extract.

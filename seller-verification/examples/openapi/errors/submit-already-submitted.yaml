@@ -1,0 +1,5 @@
+summary: Already under review
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-501 is already under review (status SUBMITTED). No need to submit it again.
+  traceId: trace-5b032

@@ -1,0 +1,5 @@
+summary: The application is already under review
+value:
+  code: APPLICATION_ALREADY_EXISTS
+  message: You already have application app-501 in SUBMITTED status. Wait for the legal team's decision.
+  traceId: trace-5b014

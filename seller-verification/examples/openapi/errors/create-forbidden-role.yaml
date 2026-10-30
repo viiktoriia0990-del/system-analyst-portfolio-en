@@ -1,0 +1,5 @@
+summary: A lawyer tries to create an application
+value:
+  code: FORBIDDEN
+  message: 'Only a seller can create an application. Your role: LEGAL_OFFICER.'
+  traceId: trace-5b013

@@ -1,0 +1,590 @@
+openapi: 3.1.0
+info:
+  title: Seller Applications API
+  version: 1.0.0
+  description: >-
+    Part of the Marketplace N project documentation, seller applications module.
+    The company name, legal details and seller data have been changed.
+    A seller creates a verification application, edits it and submits it for review.
+    The legal team makes a decision. An application can be archived and restored.
+servers:
+- url: http://localhost:4010
+  description: Local Prism mock server
+security:
+- bearerAuth: []
+tags:
+- name: Seller applications
+  description: The seller's work with their own verification application
+- name: Review
+  description: Application queue and the legal officer's decision
+paths:
+  /seller-applications:
+    get: # Application list with filters and pagination
+      tags:
+      - Review
+      operationId: listSellerApplications
+      summary: Get the application list
+      description: >-
+        Returns applications page by page. `LEGAL_OFFICER` sees all applications, `SELLER` sees only their own.
+        By default, the first page of 20 applications, newest first. Archived applications are shown only with `archived=true`
+      parameters:
+      - $ref: '#/components/parameters/StatusFilter'
+      - $ref: '#/components/parameters/Page'
+      - $ref: '#/components/parameters/Size'
+      - $ref: '#/components/parameters/Sort'
+      - $ref: '#/components/parameters/Archived'
+      responses:
+        '200':
+          description: A page of the application list
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/application-list-response.yaml
+              examples:
+                firstPage:
+                  $ref: ../examples/openapi/application-list-first-page.yaml
+                secondPage:
+                  $ref: ../examples/openapi/application-list-second-page.yaml
+                reviewQueue:
+                  $ref: ../examples/openapi/application-list-review-queue.yaml
+                byStatuses:
+                  $ref: ../examples/openapi/application-list-by-statuses.yaml
+                outOfRange:
+                  $ref: ../examples/openapi/application-list-empty-response.yaml
+                archived:
+                  $ref: ../examples/openapi/application-list-archived.yaml
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples: # Error variant switcher in Response samples
+                sizeTooLarge:
+                  $ref: ../examples/openapi/errors/list-size-too-large.yaml
+                pageZero:
+                  $ref: ../examples/openapi/errors/list-page-zero.yaml
+                unknownSort:
+                  $ref: ../examples/openapi/errors/list-unknown-sort.yaml
+                unknownStatus:
+                  $ref: ../examples/openapi/errors/list-unknown-status.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Seller applications
+      operationId: createSellerApplication
+      summary: Create an application
+      description: >-
+        Creates a verification application in `DRAFT` status. Available to the `SELLER` role.
+        A seller can have only one open application; creating another returns `409`.
+        Archived applications are not counted
+      requestBody:
+        description: Seller data and attached documents
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/openapi/create-application-request.yaml
+            examples:
+              default:
+                $ref: ../examples/openapi/create-application-request.yaml
+      responses:
+        '201':
+          description: Application created
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                created:
+                  $ref: ../examples/openapi/application-created-response.yaml
+        '400':
+          description: Invalid application data format
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                invalidInn:
+                  $ref: ../examples/openapi/errors/create-invalid-inn.yaml
+                invalidEmail:
+                  $ref: ../examples/openapi/errors/create-invalid-email.yaml
+                missingName:
+                  $ref: ../examples/openapi/errors/create-missing-name.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Only a seller can create applications
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                wrongRole:
+                  $ref: ../examples/openapi/errors/create-forbidden-role.yaml
+        '409':
+          description: The seller already has an open application
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                alreadySubmitted:
+                  $ref: ../examples/openapi/errors/create-already-submitted.yaml
+                alreadyDraft:
+                  $ref: ../examples/openapi/errors/create-already-draft.yaml
+  /seller-applications/{applicationId}: # Path for operations on a specific application
+    parameters: # Shared path parameters
+    - $ref: '#/components/parameters/ApplicationId' # Reference to the ApplicationId parameter in components.parameters below
+    get: # HTTP method to read an application
+      tags: # Operation group in the documentation
+      - Seller applications
+      operationId: getSellerApplication # Unique operation ID
+      summary: Get an application # Short operation name
+      description: >- # Behavior and access checks
+        Returns an application. A seller sees only their own application,
+        a legal officer (`LEGAL_OFFICER`) sees any.
+        The Notification Service calls the operation with a service token to get contactEmail for the email
+      responses: # Possible HTTP responses
+        '200': # Successfully retrieved
+          description: Application retrieved
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml # Application schema
+              examples:
+                submitted:
+                  $ref: ../examples/openapi/application-submitted-response.yaml # Example of an application under review
+        '401':
+          $ref: '#/components/responses/Unauthorized' # Shared 401 response
+        '403': # Seller requests someone else's application
+          description: The application belongs to another seller
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                foreignApplication:
+                  $ref: ../examples/openapi/errors/get-foreign-application.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound' # Shared 404 response
+    patch: # Partial application update
+      tags:
+      - Seller applications
+      operationId: updateSellerApplication
+      summary: Update an application
+      description: >-
+        Updates application data in `DRAFT` or `NEEDS_REWORK` status. Available to the owning seller.
+        Only the fields to change are passed (JSON Merge Patch, RFC 7396).
+        `contactEmail`, `legalName` and `documents` can be changed; `legalForm` only together with a new `inn`.
+        The status is not changed by this operation
+      requestBody:
+        description: Fields to update
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: ../schemas/openapi/update-application-request.yaml
+            examples:
+              changeEmail: # Request variants, same scenarios and names as the 200 response
+                $ref: ../examples/openapi/update-email-request.yaml
+              changeLegalForm:
+                $ref: ../examples/openapi/update-legal-form-request.yaml
+              replaceDocuments:
+                $ref: ../examples/openapi/update-documents-request.yaml
+      responses:
+        '200':
+          description: Application updated
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                changeEmail:
+                  $ref: ../examples/openapi/application-email-updated-response.yaml
+                changeLegalForm:
+                  $ref: ../examples/openapi/application-legal-form-updated-response.yaml
+                replaceDocuments:
+                  $ref: ../examples/openapi/application-documents-updated-response.yaml
+        '400':
+          description: Invalid update data
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                emptyBody:
+                  $ref: ../examples/openapi/errors/update-empty-body.yaml
+                readOnlyField:
+                  $ref: ../examples/openapi/errors/update-read-only-field.yaml
+                legalFormWithoutInn:
+                  $ref: ../examples/openapi/errors/update-legal-form-without-inn.yaml
+                innMismatch:
+                  $ref: ../examples/openapi/errors/update-inn-mismatch.yaml
+                invalidEmail:
+                  $ref: ../examples/openapi/errors/update-invalid-email.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The application belongs to another seller
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                foreignApplication:
+                  $ref: ../examples/openapi/errors/get-foreign-application.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '409':
+          description: The application cannot be updated in its current state
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                underReview:
+                  $ref: ../examples/openapi/errors/update-under-review.yaml
+                approved:
+                  $ref: ../examples/openapi/errors/update-approved.yaml
+                rejected:
+                  $ref: ../examples/openapi/errors/update-rejected.yaml
+                archived:
+                  $ref: ../examples/openapi/errors/update-archived.yaml
+  /seller-applications/{applicationId}/submit:
+    parameters:
+    - $ref: '#/components/parameters/ApplicationId'
+    post:
+      tags:
+      - Seller applications
+      operationId: submitSellerApplication
+      summary: Submit an application for review
+      description: >-
+        Moves an application from `DRAFT` or `NEEDS_REWORK` to `SUBMITTED`. Available to the owning seller.
+        Before submission, the system checks that all required documents are attached.
+        The body is optional: the seller can leave a comment for the lawyer in it
+      requestBody:
+        description: Seller's comment for the legal team
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/openapi/submit-request.yaml
+            examples:
+              default:
+                $ref: ../examples/openapi/submit-request.yaml
+      responses:
+        '200':
+          description: Application submitted for review
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                submitted:
+                  $ref: ../examples/openapi/application-submitted-response.yaml
+                resubmitted:
+                  $ref: ../examples/openapi/application-resubmitted-response.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The application belongs to another seller
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                foreignApplication:
+                  $ref: ../examples/openapi/errors/get-foreign-application.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '409':
+          description: The application cannot be submitted in its current state
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                assayMissing:
+                  $ref: ../examples/openapi/errors/submit-assay-missing.yaml
+                allDocumentsMissing:
+                  $ref: ../examples/openapi/errors/submit-all-missing.yaml
+                alreadySubmitted:
+                  $ref: ../examples/openapi/errors/submit-already-submitted.yaml
+                alreadyApproved:
+                  $ref: ../examples/openapi/errors/submit-already-approved.yaml
+                rejected:
+                  $ref: ../examples/openapi/errors/submit-rejected.yaml
+                archived:
+                  $ref: ../examples/openapi/errors/submit-archived.yaml
+  /seller-applications/{applicationId}/archive:
+    parameters:
+    - $ref: '#/components/parameters/ApplicationId'
+    post:
+      tags:
+      - Seller applications
+      operationId: archiveSellerApplication
+      summary: Archive an application
+      description: >-
+        Soft delete: the application stays in the system but disappears from the list and doesn't block creating a new one.
+        Available to the owning seller for applications in `DRAFT`, `NEEDS_REWORK` and `REJECTED` statuses.
+        The status doesn't change, `archivedAt` appears in the application. No body is sent: the application is identified by `applicationId`
+      responses:
+        '200':
+          description: Application archived
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                archivedDraft:
+                  $ref: ../examples/openapi/application-archived-draft-response.yaml
+                archivedRejected:
+                  $ref: ../examples/openapi/application-archived-rejected-response.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The application belongs to another seller
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                foreignApplication:
+                  $ref: ../examples/openapi/errors/get-foreign-application.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '409':
+          description: The application cannot be archived
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                underReview:
+                  $ref: ../examples/openapi/errors/archive-under-review.yaml
+                approved:
+                  $ref: ../examples/openapi/errors/archive-approved.yaml
+                alreadyArchived:
+                  $ref: ../examples/openapi/errors/archive-already-archived.yaml
+  /seller-applications/{applicationId}/restore:
+    parameters:
+    - $ref: '#/components/parameters/ApplicationId'
+    post:
+      tags:
+      - Seller applications
+      operationId: restoreSellerApplication
+      summary: Restore an application from archive
+      description: >-
+        Returns an application from the archive in the same status it was archived in. Available to the owning seller.
+        No body is sent: the application is identified by `applicationId`.
+        A draft or an application in rework cannot be restored if the seller already has another open application
+      responses:
+        '200':
+          description: Application restored
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                restored:
+                  $ref: ../examples/openapi/application-restored-response.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The application belongs to another seller
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                foreignApplication:
+                  $ref: ../examples/openapi/errors/get-foreign-application.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '409':
+          description: The application cannot be restored
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                notArchived:
+                  $ref: ../examples/openapi/errors/restore-not-archived.yaml
+                openApplicationExists:
+                  $ref: ../examples/openapi/errors/restore-open-application-exists.yaml
+  /seller-applications/{applicationId}/decision:
+    parameters:
+    - $ref: '#/components/parameters/ApplicationId'
+    post:
+      tags:
+      - Review
+      operationId: decideSellerApplication
+      summary: Make a decision on an application
+      description: >-
+        Saves a decision on an application in `SUBMITTED` status. Available to the `LEGAL_OFFICER` role.
+        A comment is required for `REJECTED` and `NEEDS_REWORK` decisions.
+        With `APPROVED`, the seller gets access to selling.
+        The `decision` value in the request becomes the application status in the response
+      requestBody:
+        description: Decision and comment for the seller
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/openapi/decision-request.yaml
+            examples:
+              approve: # Request variants, same scenarios and names as the 200 response
+                $ref: ../examples/openapi/decision-approve-request.yaml
+              needsRework:
+                $ref: ../examples/openapi/decision-rework-request.yaml
+              reject:
+                $ref: ../examples/openapi/decision-reject-request.yaml
+      responses:
+        '200':
+          description: Decision saved
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/seller-application.yaml
+              examples:
+                approved:
+                  $ref: ../examples/openapi/application-approved-response.yaml
+                needsRework:
+                  $ref: ../examples/openapi/application-rework-response.yaml
+                reject:
+                  $ref: ../examples/openapi/application-rejected-response.yaml
+        '400':
+          description: The decision reason is missing
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                rejectedWithoutComment:
+                  $ref: ../examples/openapi/errors/decision-comment-rejected.yaml
+                reworkWithoutComment:
+                  $ref: ../examples/openapi/errors/decision-comment-rework.yaml
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Only a legal officer can make a decision
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                wrongRole:
+                  $ref: ../examples/openapi/errors/decision-forbidden-role.yaml
+        '404':
+          $ref: '#/components/responses/ApplicationNotFound'
+        '409':
+          description: The application is not awaiting a decision
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/openapi/error-response.yaml
+              examples:
+                stillDraft:
+                  $ref: ../examples/openapi/errors/decision-draft.yaml
+                alreadyDecided:
+                  $ref: ../examples/openapi/errors/decision-already-decided.yaml
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User bearer token. The backend checks the role (`SELLER` or `LEGAL_OFFICER`) and permissions
+  parameters:
+    ApplicationId: # Reusable path parameter
+      name: applicationId
+      in: path
+      required: true
+      description: Application ID
+      schema:
+        type: string
+      example: app-501
+    StatusFilter: # Status filter
+      name: status
+      in: query
+      required: false
+      description: Show only applications in these statuses. Several can be passed, for example `status=SUBMITTED&status=NEEDS_REWORK`
+      schema:
+        type: array
+        items:
+          $ref: ../schemas/openapi/application-status.yaml
+      style: form
+      explode: true
+      example:
+      - SUBMITTED
+    Page: # Page number
+      name: page
+      in: query
+      required: false
+      description: Page number, starting from 1
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      example: 1
+    Size: # Page size
+      name: size
+      in: query
+      required: false
+      description: How many applications to return per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      example: 3
+    Sort: # Sorting
+      name: sort
+      in: query
+      required: false
+      description: >-
+        Sort field. Without a minus, ascending; with a minus, descending.
+        For the lawyer's queue use `status=SUBMITTED&sort=updatedAt`: for an application under review, the last change is the submission,
+        so those who have waited longest come first
+      schema:
+        type: string
+        enum:
+        - createdAt
+        - -createdAt
+        - updatedAt
+        - -updatedAt
+        default: -createdAt
+      example: updatedAt
+    Archived: # Show archive
+      name: archived
+      in: query
+      required: false
+      description: >-
+        `false` returns only active applications, `true` returns only archived ones
+      schema:
+        type: boolean
+        default: false
+      example: false
+  responses: # Shared responses, the same for all operations
+    Unauthorized:
+      description: The token is missing, expired or invalid
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/openapi/error-response.yaml
+          examples:
+            tokenMissing:
+              $ref: ../examples/openapi/errors/token-missing.yaml
+            tokenExpired:
+              $ref: ../examples/openapi/errors/token-expired.yaml
+    ApplicationNotFound:
+      description: Application not found
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/openapi/error-response.yaml
+          examples:
+            notFound:
+              $ref: ../examples/openapi/errors/application-not-found.yaml

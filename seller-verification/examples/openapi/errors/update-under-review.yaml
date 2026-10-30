@@ -1,0 +1,5 @@
+summary: Under review
+value:
+  code: INVALID_STATUS_TRANSITION
+  message: Application app-505 is under review (status SUBMITTED). It can be updated after the lawyer's decision if it is returned for rework.
+  traceId: trace-5b075

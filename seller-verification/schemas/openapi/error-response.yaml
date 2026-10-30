@@ -1,0 +1,41 @@
+type: object # Root type of the standard error
+description: Standard error response
+additionalProperties: false
+required:
+- code
+- message
+- traceId
+properties:
+  code:
+    type: string
+    enum:
+    - INVALID_REQUEST
+    - INVALID_PAGINATION
+    - COMMENT_REQUIRED
+    - UNAUTHORIZED
+    - FORBIDDEN
+    - APPLICATION_NOT_FOUND
+    - APPLICATION_ALREADY_EXISTS
+    - REQUIRED_DOCUMENTS_MISSING
+    - INVALID_STATUS_TRANSITION
+    - APPLICATION_ARCHIVED
+    - APPLICATION_NOT_ARCHIVED
+    x-enumDescriptions: # For each code, the HTTP status and when it is returned. Specific messages are in the response examples
+      INVALID_REQUEST: 400 · invalid field format, empty body, read-only field, unknown status or sort
+      INVALID_PAGINATION: 400 · page is less than 1 or size is outside 1–100
+      COMMENT_REQUIRED: 400 · a REJECTED or NEEDS_REWORK decision without a comment
+      UNAUTHORIZED: 401 · the token is missing or expired
+      FORBIDDEN: 403 · the role has no rights for the operation or the application belongs to someone else
+      APPLICATION_NOT_FOUND: 404 · no application with this ID
+      APPLICATION_ALREADY_EXISTS: 409 · the seller already has an open application (archived applications don't count)
+      REQUIRED_DOCUMENTS_MISSING: 409 · required documents are not attached
+      INVALID_STATUS_TRANSITION: 409 · the operation is not available in the current application status
+      APPLICATION_ARCHIVED: 409 · the application is archived and can be updated or submitted only after it is restored
+      APPLICATION_NOT_ARCHIVED: 409 · only an archived application can be restored
+    example: REQUIRED_DOCUMENTS_MISSING
+  message:
+    type: string
+    example: 'Application app-507 cannot be submitted: attach proof of Assay Chamber registration (ASSAY_REGISTRATION).'
+  traceId:
+    type: string
+    example: trace-5b030

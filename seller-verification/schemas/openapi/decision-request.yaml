@@ -1,0 +1,23 @@
+type: object
+description: The legal team's decision on the application
+additionalProperties: false
+required:
+- decision
+properties:
+  decision:
+    type: string
+    enum:
+    - APPROVED
+    - REJECTED
+    - NEEDS_REWORK
+    x-enumDescriptions:
+      APPROVED: Approve, the seller gets access to selling
+      REJECTED: Reject, a comment with the reason is required
+      NEEDS_REWORK: Return for rework, a comment on what to fix is required
+    example: NEEDS_REWORK
+  comment:
+    type: string
+    description: The decision reason for the seller. Required for `REJECTED` and `NEEDS_REWORK`
+    minLength: 1
+    maxLength: 2000
+    example: The EGRIP record sheet is older than 30 days. Upload a fresh extract.

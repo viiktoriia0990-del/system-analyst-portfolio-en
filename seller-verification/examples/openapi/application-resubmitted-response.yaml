@@ -1,0 +1,18 @@
+summary: Resubmission after rework
+value:
+  id: app-501
+  sellerId: seller-024
+  status: SUBMITTED
+  legalForm: IP
+  legalName: IE Anna Viktorovna Smirnova
+  inn: '771234567890'
+  contactEmail: anna.smirnova@example.com
+  documents:
+  - type: REGISTRATION_RECORD
+    fileId: file-3105
+  - type: ASSAY_REGISTRATION
+    fileId: file-3102
+  sellerComment: Uploaded a fresh EGRIP extract dated 24.10.2026.
+  reviewComment: The EGRIP record sheet is older than 30 days. Upload a fresh extract.
+  createdAt: '2026-10-22T09:10:00Z'
+  updatedAt: '2026-10-24T08:20:00Z'
