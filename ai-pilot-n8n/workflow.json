@@ -1,0 +1,285 @@
+{
+  "name": "AI třídění dotazů studentů",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Dotaz na studijní oddělení",
+        "formDescription": "Napište nám svůj dotaz, odpovíme co nejdříve",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Jméno",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "E-mail",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Dotaz",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "854cb71d-575b-4340-9dc4-44b0a11d33e1",
+      "name": "On form submission",
+      "webhookId": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.Dotaz }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Kategorie",
+              "description": "Kategorie dotazu. Vyber přesně jednu z: Přijímací řízení, Studijní záležitosti, Poplatky, Jiné",
+              "required": true
+            },
+            {
+              "name": "navrh_odpovedi",
+              "description": "Krátká zdvořilá odpověď česky, kterou před odesláním zkontroluje pracovník studijního oddělení. Začni oslovením „Dobrý den,“ a buď stručný (max. 3 věty). Piš za studijní oddělení v 1. osobě množného čísla (např. „rádi vám pomůžeme“). Nevymýšlej konkrétní data ani částky.",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "ef623e87-be25-4b33-8483-85a0cc90813b",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        160,
+        208
+      ],
+      "id": "617b038a-e4b0-4cf2-90c1-049d6b53bf5e",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Dotazy studentů",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Kategorie": "={{ $json.output.Kategorie }}",
+            "Návrh odpovědi": "={{ $json.output.navrh_odpovedi }}",
+            "Jméno": "={{ $('On form submission').item.json['Jméno'] }}",
+            "E-mail": "={{ $('On form submission').item.json['E-mail'] }}",
+            "Dotaz": "={{ $('On form submission').item.json.Dotaz }}",
+            "Datum": "={{ $now.format('dd.MM.yyyy HH:mm') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Datum",
+              "displayName": "Datum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Jméno",
+              "displayName": "Jméno",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "E-mail",
+              "displayName": "E-mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Dotaz",
+              "displayName": "Dotaz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Kategorie",
+              "displayName": "Kategorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Návrh odpovědi",
+              "displayName": "Návrh odpovědi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        592,
+        0
+      ],
+      "id": "5ba43f5f-9d28-4fd6-ae4a-b466f0dfbc2a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "=Re: Váš dotaz – {{ $('Information Extractor').item.json.output.Kategorie }}",
+        "message": "={{ $('Information Extractor').item.json.output.navrh_odpovedi }}  S pozdravem Studijní oddělení",
+        "options": {
+          "sendTo": "={{ $('On form submission').item.json['E-mail'] }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "f03a77f0-cad6-4af0-ba46-54d0dacd8edf",
+      "name": "Create a draft",
+      "webhookId": "00000000-0000-0000-0000-000000000000",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "tags": []
+}
