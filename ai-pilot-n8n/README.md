@@ -24,7 +24,64 @@ Důležitá podmínka: **AI nic neodesílá sama.** Odpověď vždy schvaluje č
 
 ---
 
-## Řešení
+## Byznysový proces
+
+### AS-IS: jak to funguje dnes
+
+1. Student pošle dotaz e-mailem nebo přes web.
+2. Pracovník studijního oddělení dotaz přečte a sám určí, o jaké téma jde.
+3. Odpověď píše pokaždé od nuly, i když se stejné dotazy opakují.
+4. Přehled o tom, kolik a jakých dotazů přichází, chybí, protože se nikde neevidují.
+
+**Bolesti:** ruční rutina, pomalé odpovědi ve špičkách (přijímačky, začátek semestru), žádná data pro zlepšování služeb.
+
+### TO-BE: jak to funguje s AI
+
+1. **Student** vyplní krátký formulář: jméno, e-mail a dotaz.
+2. **AI** dotaz přečte a podle předem nastavených pravidel ho zařadí do jedné ze 4 kategorií (Přijímací řízení, Studijní záležitosti, Poplatky, Jiné).
+3. **AI** zároveň připraví koncept odpovědi: zdvořilý, stručný, jménem oddělení a bez vymyšlených termínů a částek.
+4. **Systém** dotaz automaticky zapíše do evidenční tabulky: datum, kdo se ptá, na co, kategorie a návrh odpovědi.
+5. **Systém** vytvoří v poště oddělení koncept e-mailu pro studenta. Nic se neodesílá automaticky.
+6. **Pracovník** otevře koncept, zkontroluje ho, případně doplní konkrétní informaci a odešle.
+
+```mermaid
+sequenceDiagram
+    actor S as Student
+    participant F as Formulář
+    participant AI as AI (Claude)
+    participant T as Evidence (Google Sheets)
+    participant G as Pošta oddělení (Gmail)
+    actor P as Pracovník
+
+    S->>F: Vyplní jméno, e-mail a dotaz
+    F->>AI: Předá text dotazu
+    AI->>AI: Určí kategorii podle pravidel
+    AI->>AI: Připraví koncept odpovědi
+    AI->>T: Zapíše dotaz, kategorii a koncept
+    AI->>G: Vytvoří koncept e-mailu (neodesílá)
+    P->>G: Otevře a zkontroluje koncept
+    P->>P: Doplní nebo opraví odpověď
+    P->>S: Odešle odpověď
+```
+
+### Role a odpovědnosti
+
+| Role | Co dělá | Za co odpovídá |
+|---|---|---|
+| Student | Pošle dotaz přes formulář | Srozumitelně popsat dotaz |
+| AI | Třídí dotazy a navrhuje odpovědi | Nic neodesílá, nevymýšlí si fakta |
+| Pracovník oddělení | Kontroluje a odesílá odpovědi | Správnost a konečná podoba odpovědi |
+
+### Přínosy
+
+- **Méně rutiny:** pracovník nepíše odpověď od nuly, jen kontroluje a doplňuje.
+- **Rychlejší reakce** ve špičkách, protože koncept je připravený okamžitě.
+- **Data o dotazech:** evidence ukazuje, na co se studenti ptají nejčastěji, a z toho lze např. doplnit FAQ na webu.
+- **Bezpečnost:** konečné rozhodnutí má vždy člověk.
+
+---
+
+## Technické řešení
 
 ```mermaid
 flowchart LR
